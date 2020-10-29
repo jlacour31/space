@@ -9,7 +9,7 @@
             <toc/>
         </booklists>
     </frontmatter>
-    <chapter href="maps/chapter-introduction.ditamap" format="ditamap"/>
+    <chapter href="topics/introduction.dita"/>
     <chapter href="maps/chapter-galaxies.ditamap" format="ditamap"/>
     <chapter href="maps/chapter-planets.ditamap" format="ditamap"/>
     <chapter href="maps/chapter-aeronautics.ditamap" format="ditamap"/>
