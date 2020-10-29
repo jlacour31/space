@@ -10,10 +10,16 @@
         </booklists>
     </frontmatter>
     <chapter href="topics/introduction.dita"/>
-    <chapter href="maps/chapter-galaxies.ditamap" format="ditamap"/>
-    <chapter href="maps/chapter-planets.ditamap" format="ditamap"/>
-    <chapter href="maps/chapter-aeronautics.ditamap" format="ditamap"/>
-    <chapter href="maps/chapter-deep-space-exploration.ditamap" format="ditamap"/>
+    <chapter href="topics/galaxies.dita"/>
+    <chapter href="topics/planets.dita">
+        <topicref href="topics/terrestrial.dita"/>
+        <topicref href="topics/giant-planets.dita"/>
+    </chapter>
+    <chapter href="topics/aeronautics.dita"/>
+    <chapter href="topics/deep-space-exploration.dita">
+        <topicref href="topics/anomalies.dita"/>
+        <topicref href="topics/pluto-flyover.dita"/>
+    </chapter>
     <chapter href="maps/chapter-space-ships.ditamap" format="ditamap"/>
     <backmatter>
         <booklists>
