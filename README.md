@@ -1,10 +1,10 @@
 # Travis CI
-[![Build Status](https://travis-ci.org/arbiter3131/space.svg?branch=master)](https://travis-ci.org/arbiter3131/space)
+[![Build Status](https://travis-ci.org/jlacour31/space.svg?branch=master)](https://travis-ci.org/jlacour31/space)
 # CircleCI
-[![CircleCI](https://circleci.com/gh/arbiter3131/space/tree/master.svg?style=svg)](https://circleci.com/gh/arbiter3131/space/tree/master)
+[![CircleCI](https://circleci.com/gh/jlacour31/space/tree/master.svg?style=svg)](https://circleci.com/gh/jlacour31/space/tree/master)
 # Links
-[Output Project](https://github.com/arbiter3131/space-pages)
+[Output Project](https://github.com/jlacour31/space-pages)
 
-[Published PDF](https://arbiter3131.github.io/space-pages/pdf-css-html5/space.pdf)
+[Published PDF](https://jlacour31.github.io/space-pages/pdf-css-html5/space.pdf)
 
-[Published WebHelp](https://arbiter3131.github.io/space-pages/webhelp-responsive/)
+[Published WebHelp](https://jlacour31.github.io/space-pages/webhelp-responsive/)
