@@ -87,25 +87,20 @@
                 </tgroup>
             </table>
         </p>
-        <example id="ex1"><b>X22000 API
-                    Code:</b><codeblock outputclass="language-java">/**
- * Omnis voluptas assumenda x22000, omnis dolor repellendus.
- * @param id est laborum.
+        <example id="ex1"><b>X22000 API Code:</b><codeblock outputclass="language-java">/**
+ * Checks if the specified thrust is above light speed.
+ * @param thrust the specified thrust.
  */
-public boolean praesentium() {
-	int thrust = 865086;
-	doSomething(thrust, false);
-	// Excepteur sint occaecat cupidatat non proident.
+public boolean isLightSpeedReached(int thrust) throws LowSpeedException {
+    // Exception if the thrust is too small.
+    throw new LowSpeedException("We need more power!", thrust);
 
-	while (true) {
-		print("Duis aute irure dolor!");
-	}
-	/*
-	Duis aute irure dolor in reprehenderit in
-	voluptate velit esse cillum dolore eu fugiat.
-	*/
-
-	return thrust > 132413 ? true : false;
-}</codeblock><p><codeph>x22000_4Core_ver1</codeph></p><p><codeph>x22000_4Core_ver2</codeph></p><p><codeph>x22000_4Core_ver3</codeph></p><p><codeph>x22000_4Core_ver4</codeph></p></example>
+    return thrust > 186000 ? true : false;
+}</codeblock><p>Commercial versions available:<ul id="ul_q34_rvn_b4b">
+                    <li><codeph>x22000_4Core_ver1</codeph></li>
+                    <li><codeph>x22000_4Core_ver2</codeph></li>
+                    <li><codeph>x22000_4Core_ver3</codeph></li>
+                    <li><codeph>x22000_4Core_ver4</codeph></li>
+                </ul></p></example>
     </body>
 </topic>

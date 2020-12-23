@@ -20,7 +20,14 @@
         <topicref href="topics/anomalies.dita"/>
         <topicref href="topics/pluto-flyover.dita"/>
     </chapter>
-    <chapter href="maps/chapter-space-ships.ditamap" format="ditamap"/>
+    <chapter href="topics/ships.dita">
+        <topicref href="topics/x22000.dita">
+            <topicref href="topics/x22000-specs.dita"/>
+        </topicref>
+        <topicref href="topics/z11000.dita">
+            <topicref href="topics/z11000-specs.dita"/>
+        </topicref>
+    </chapter>
     <backmatter>
         <booklists>
             <figurelist/>

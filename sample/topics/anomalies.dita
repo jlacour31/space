@@ -66,23 +66,112 @@
             </ul></p>
         <section id="kepler">
             <title>Kepler's Laws of Planetary Motion</title>
-            <p>In astronomy, Kepler's laws of planetary motion are scientific laws describing the
-                motion of planets around the Sun:<ol id="ol1">
-                    <li>The orbit of a planet is an ellipse with the Sun at one of the two foci.<ol
-                            id="ol2">
+            <p>In astronomy, Kepler's laws of planetary motion are scientific laws describing the motion of planets around the Sun:<ol id="ol1">
+                    <li>The orbit of a planet is an ellipse with the Sun at one of the two foci.<ol id="ol2">
                             <li>The planetary orbit is not a circle, but an ellipse.<ol id="ol3">
-                                    <li>The Sun is not at the center but at a focal point of the
-                                        elliptical orbit.</li>
+                                    <li>The Sun is not at the center but at a focal point of the elliptical orbit.</li>
                                 </ol></li>
-                            <li>Neither the linear speed nor the angular speed of the planet in the
-                                orbit is constant, but the area speed (closely linked historically
-                                with the concept of angular momentum) is constant.</li>
+                            <li>Neither the linear speed nor the angular speed of the planet in the orbit is constant, but the area speed (closely linked historically with the concept of angular momentum) is constant.</li>
                         </ol></li>
-                    <li>A line segment joining a planet and the Sun sweeps out equal areas during
-                        equal intervals of time.</li>
-                    <li>The square of the orbital period of a planet is directly proportional to the
-                        cube of the semi-major axis of its orbit.</li>
-                </ol></p>
+                    <li>A line segment joining a planet and the Sun sweeps out equal areas during equal intervals of time.</li>
+                    <li>The square of the orbital period of a planet is directly proportional to the cube of the semi-major axis of its orbit.</li>
+                </ol>Kepler's Third Law: <mathml>
+                    <m:math class="MJX-TeXAtom-ORD">
+                        <m:mrow class="MJX-TeXAtom-ORD">
+                            <m:mstyle displaystyle="true" scriptlevel="0">
+                                <m:mi>m</m:mi>
+                                <m:mi>r</m:mi>
+                                <m:msup>
+                                    <m:mrow>
+                                        <m:mo>(</m:mo>
+                                        <m:mrow class="MJX-TeXAtom-ORD">
+                                            <m:mfrac>
+                                                <m:mrow>
+                                                    <m:mn>2</m:mn>
+                                                    <m:mi>&#x03C0;<!-- π --></m:mi>
+                                                </m:mrow>
+                                                <m:mi>T</m:mi>
+                                            </m:mfrac>
+                                        </m:mrow>
+                                        <m:mo>)</m:mo>
+                                    </m:mrow>
+                                    <m:mrow class="MJX-TeXAtom-ORD">
+                                        <m:mn>2</m:mn>
+                                    </m:mrow>
+                                </m:msup>
+                                <m:mo>=</m:mo>
+                                <m:mi>G</m:mi>
+                                <m:mrow class="MJX-TeXAtom-ORD">
+                                    <m:mfrac>
+                                        <m:mrow>
+                                            <m:mi>m</m:mi>
+                                            <m:mi>M</m:mi>
+                                        </m:mrow>
+                                        <m:msup>
+                                            <m:mi>r</m:mi>
+                                            <m:mrow class="MJX-TeXAtom-ORD">
+                                                <m:mn>2</m:mn>
+                                            </m:mrow>
+                                        </m:msup>
+                                    </m:mfrac>
+                                </m:mrow>
+                                <m:mo stretchy="false">&#x2192;<!-- → --></m:mo>
+                                <m:msup>
+                                    <m:mi>T</m:mi>
+                                    <m:mrow class="MJX-TeXAtom-ORD">
+                                        <m:mn>2</m:mn>
+                                    </m:mrow>
+                                </m:msup>
+                                <m:mo>=</m:mo>
+                                <m:mrow>
+                                    <m:mo>(</m:mo>
+                                    <m:mrow class="MJX-TeXAtom-ORD">
+                                        <m:mfrac>
+                                            <m:mrow>
+                                                <m:mn>4</m:mn>
+                                                <m:msup>
+                                                    <m:mi>&#x03C0;<!-- π --></m:mi>
+                                                    <m:mrow class="MJX-TeXAtom-ORD">
+                                                        <m:mn>2</m:mn>
+                                                    </m:mrow>
+                                                </m:msup>
+                                            </m:mrow>
+                                            <m:mrow>
+                                                <m:mi>G</m:mi>
+                                                <m:mi>M</m:mi>
+                                            </m:mrow>
+                                        </m:mfrac>
+                                    </m:mrow>
+                                    <m:mo>)</m:mo>
+                                </m:mrow>
+                                <m:msup>
+                                    <m:mi>r</m:mi>
+                                    <m:mrow class="MJX-TeXAtom-ORD">
+                                        <m:mn>3</m:mn>
+                                    </m:mrow>
+                                </m:msup>
+                                <m:mo stretchy="false">&#x2192;<!-- → --></m:mo>
+                                <m:msup>
+                                    <m:mi>T</m:mi>
+                                    <m:mrow class="MJX-TeXAtom-ORD">
+                                        <m:mn>2</m:mn>
+                                    </m:mrow>
+                                </m:msup>
+                                <m:mo>&#x221D;<!-- ∝ --></m:mo>
+                                <m:msup>
+                                    <m:mi>r</m:mi>
+                                    <m:mrow class="MJX-TeXAtom-ORD">
+                                        <m:mn>3</m:mn>
+                                    </m:mrow>
+                                </m:msup>
+                            </m:mstyle>
+                        </m:mrow>
+                    </m:math>
+                </mathml>
+                <fig id="fig_bpv_m14_b4b">
+                    <title>Illustration of Kepler's three laws with two planetary orbits</title>
+                    <image href="../img/Kepler.svg" id="image_cpv_m14_b4b"/>
+                </fig></p>
         </section>
     </body>
 </topic>
