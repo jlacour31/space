@@ -1,5 +1,5 @@
 # Travis CI
-[![Build Status](https://travis-ci.org/jlacour31/space.svg?branch=master)](https://travis-ci.org/jlacour31/space)
+[![Build Status](https://api.travis-ci.com/jlacour31/space.svg?branch=master)](https://app.travis-ci.com/github/jlacour31/space)
 # CircleCI
 [![CircleCI](https://circleci.com/gh/jlacour31/space.svg?style=svg)](https://circleci.com/gh/jlacour31/space)
 # Links
