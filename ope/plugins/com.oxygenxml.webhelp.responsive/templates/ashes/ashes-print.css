@@ -8,9 +8,17 @@
 	font-family: "PT Sans", sans-serif;
 }
 
+*[class ~= "front-page/front-page-title"] {
+    font-family: "PT Sans", sans-serif;
+}
+
+*[class ~= "topic/fn"] {
+    font-family: "PT Sans", sans-serif;
+}
+
 body {
   font-size: 10pt;
-  background-color: white;
+  background-color: inherit;
   line-height: 1.7em;  
 }
 

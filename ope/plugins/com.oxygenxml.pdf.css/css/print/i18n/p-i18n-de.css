@@ -76,8 +76,8 @@ I18N file for de
 }
 
 /* Links. */
-*[class ~= "topic/xref"][href]:lang(de):after,
-*[class ~= "topic/link"][href]:lang(de):after {
+*[class ~= "map/map"] *[class ~= "topic/xref"][href]:lang(de):after,
+*[class ~= "map/map"] *[class ~= "topic/link"][href]:lang(de):after {
   content: " (auf Seite " target-counter(attr(href), page) ")";
 }
 
@@ -93,7 +93,7 @@ I18N file for de
 			  			
 			  				
 	
-*[class~="topic/table"] > *[class~="topic/title"][is-repeated]:lang(de):after(2) {
+*[class~="topic/table"] > *[class~="topic/title"][data-is-repeated]:lang(de):after(2) {
     content: " " "(Fortsetzung)";
 }
 

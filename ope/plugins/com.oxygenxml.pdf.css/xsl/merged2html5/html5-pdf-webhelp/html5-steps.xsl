@@ -38,7 +38,8 @@
   <xsl:template match="section[not(@class)]" mode="add-section-class">
     <xsl:param name="list-type"/>
     <xsl:copy>
-      <xsl:apply-templates select="@*" mode="#current"/>
+      <!-- Default HTML5 style-sheet already set an id on section child (div, ol or ul). -->
+      <xsl:apply-templates select="@* except @id" mode="#current"/>
       <xsl:choose>
         <xsl:when test="$list-type = 'ol'">
           <xsl:attribute name="class">- topic/ol task/steps ol steps</xsl:attribute>
@@ -49,6 +50,13 @@
       </xsl:choose>
       <xsl:apply-templates select="node()" mode="#current"/>
     </xsl:copy>
+  </xsl:template>
+  
+  <!-- Created using template from: org.dita.html5/xsl/task.xsl -->
+  <!-- Process task/steptroubleshooting as other task sub-elements -->
+  <!-- Maybe to be removed if DITA-OT update includes this template -->
+  <xsl:template match="*[contains(@class,' task/steptroubleshooting ')]" name="topic.task.steptroubleshooting">
+    <xsl:call-template name="generateItemGroupTaskElement"/>
   </xsl:template>
   
 </xsl:stylesheet>

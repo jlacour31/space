@@ -76,8 +76,8 @@ I18N file for cs
 }
 
 /* Links. */
-*[class ~= "topic/xref"][href]:lang(cs):after,
-*[class ~= "topic/link"][href]:lang(cs):after {
+*[class ~= "map/map"] *[class ~= "topic/xref"][href]:lang(cs):after,
+*[class ~= "map/map"] *[class ~= "topic/link"][href]:lang(cs):after {
   content: " (na stránce " target-counter(attr(href), page) ")";
 }
 
@@ -91,7 +91,7 @@ I18N file for cs
 				  
 					  	
 	
-*[class~="topic/table"] > *[class~="topic/title"][is-repeated]:lang(cs):after(2) {
+*[class~="topic/table"] > *[class~="topic/title"][data-is-repeated]:lang(cs):after(2) {
     content: " " "";
 }
 

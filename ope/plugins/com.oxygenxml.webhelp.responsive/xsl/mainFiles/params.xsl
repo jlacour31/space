@@ -2,7 +2,7 @@
 <!--
     
 Oxygen Webhelp plugin
-Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
+Copyright (c) 1998-2021 Syncro Soft SRL, Romania.  All rights reserved.
 
 -->
 
@@ -37,9 +37,6 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
 
   <!-- Copyright notice inserted by user that runs transform. -->
   <xsl:param name="WEBHELP_COPYRIGHT"/>
-
-  <!-- Name of product displayed in title of email notification sent to users. -->
-  <xsl:param name="WEBHELP_PRODUCT_NAME"/>
 
   <!-- The URL for the search template. -->
   <xsl:param name="WEBHELP_SEARCH_TEMPLATE_URL"/>

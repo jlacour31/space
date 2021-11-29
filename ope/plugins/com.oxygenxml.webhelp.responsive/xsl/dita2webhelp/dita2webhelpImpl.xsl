@@ -2,7 +2,7 @@
 <!--
     
 Oxygen Webhelp plugin
-Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
+Copyright (c) 1998-2021 Syncro Soft SRL, Romania.  All rights reserved.
 
 -->
 
@@ -29,9 +29,9 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
   
   <xsl:output 
             method="xhtml" 
+            html-version="5.0"
             encoding="UTF-8"
             indent="no"
-            doctype-system="about:legacy-compat"
             omit-xml-declaration="yes"
             include-content-type="no"/>
 
@@ -48,7 +48,7 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
   <!-- The path of toc.xml -->
   <xsl:param name="TOC_XML_FILEPATH" select="'in/toc.xml'"/>
   
-  <xsl:variable name="toc" select="document(oxygen:makeURL($TOC_XML_FILEPATH))/toc:toc"/>
+  <xsl:variable name="toc" select="document(oxygen:makeURL($TOC_XML_FILEPATH), .)/toc:toc"/>
   
   <!-- 
     The URL of the Webhelp template. 
@@ -81,13 +81,16 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
   <xsl:param name="WEBHELP_PARAMETERS_URL" />
   
   <xsl:param name="WEBHELP_TRIAL_LICENSE" select="'no'"/>
-  <xsl:param name="WEBHELP_PRODUCT_ID" select="''"/>
-  <xsl:param name="WEBHELP_PRODUCT_VERSION" select="''"/>
   
   <xsl:param name="BASEDIR"/>
   <xsl:param name="OUTPUTDIR"/>
   <xsl:param name="LANGUAGE" select="'en-us'"/>
   
+  <!-- Elements to generate data-ofbid attribute. -->
+  <xsl:param name="DATA_OFBID_ELEMENTS"/>
+  
+  <!-- Elements that will not have the data-ofbid attribute generated. -->
+  <xsl:param name="DATA_OFBID_ELEMENTS_TO_EXCLUDE"/>
   
   <!-- The path of index.xml -->
   <xsl:param name="INDEX_XML_FILEPATH" select="'in/index.xml'"/>

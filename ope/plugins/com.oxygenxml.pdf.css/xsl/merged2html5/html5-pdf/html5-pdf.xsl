@@ -15,5 +15,6 @@
   <xsl:include href="html5-footnotes.xsl"/>
   <xsl:include href="html5-ut-domain.xsl"/>
   <xsl:include href="html5-topic-head.xsl"/>
+  <xsl:include href="html5-definition-list.xsl"/>
     
 </xsl:stylesheet>

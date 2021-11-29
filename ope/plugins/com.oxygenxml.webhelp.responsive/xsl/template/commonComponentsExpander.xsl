@@ -2,7 +2,7 @@
 <!--
     
 Oxygen Webhelp plugin
-Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
+Copyright (c) 1998-2021 Syncro Soft SRL, Romania.  All rights reserved.
 
 -->
 <!-- Used to expand Webhelp components that are common to all templates: topic, search, main.  -->
@@ -52,7 +52,7 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
     <xsl:template match="html:head" mode="copy_template">
         <xsl:param name="ditaot_topicContent" tunnel="yes" as="node()*"/>
         <xsl:param name="i18n_context" tunnel="yes" as="node()*"/>
-        <xsl:copy>
+        <xsl:copy copy-namespaces="no">
             <!-- EXM-36084 generate linkf for favicon -->
             <xsl:call-template name="generateFaviconLink"/>
             
@@ -289,7 +289,6 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
         </xsl:call-template>
     </xsl:template>
     
-    
     <!-- Generate links to CSSs and JavaScript that are custom to all Responsive pages. -->
     <xsl:template match="whc:webhelp_skin_resources" mode="copy_template">
         <xsl:call-template name="addLinksToSkinResources"/>
@@ -381,7 +380,7 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
                             <div>
                                 <input type="search" placeholder="{$localizedSearch} " class="wh_search_textfield"
                                     id="textToSearch" name="searchQuery" aria-label="{$localizedSearchQuery}" required="required"/>
-                                <button type="submit" class="wh_search_button" aria-label="{$localizedSearch}"><span><xsl:value-of select="$localizedSearch"/></span></button>
+                                <button type="submit" class="wh_search_button" aria-label="{$localizedSearch}"><span class="search_input_text"><xsl:value-of select="$localizedSearch"/></span></button>
                             </div>
                         </form>
             </xsl:variable>
@@ -526,6 +525,71 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
         </xsl:call-template>
     </xsl:template>
     
+    <!-- External resource link -->
+    <xsl:template match="whc:external_resourse_link[@type='pdf_link']" mode="copy_template">
+        
+        <xsl:param name="ditaot_topicContent" tunnel="yes"/>
+        
+        <xsl:variable name="showPdfLink" 
+            select="oxy:getParameter('webhelp.show.pdf.link') = 'yes' and
+            string-length(oxy:getParameter('webhelp.pdf.link.url')) > 0 and
+            string-length(oxy:getParameter('webhelp.pdf.link.text')) > 0"
+            as="xs:boolean"/>
+        
+        <xsl:if test="$showPdfLink" >
+            
+            <a target="_blank" >
+                <xsl:attribute name="href" >
+                    <xsl:variable name="url">
+                        <xsl:value-of>
+                            <xsl:apply-templates select="@href" mode="copy_template"/>
+                        </xsl:value-of>
+                    </xsl:variable>
+                    
+                    <xsl:variable name="pdfLinkContext">
+                        <xsl:if test="oxy:getParameter('webhelp.pdf.link.name.destination.enabled') = 'yes' and exists($ditaot_topicContent)">
+                            <xsl:value-of select="$ditaot_topicContent//*:head/*:meta[@name='DC.identifier']/@content"/>
+                        </xsl:if>
+                    </xsl:variable>
+                    
+                    <xsl:choose>
+                        <xsl:when test="string-length($pdfLinkContext) > 0">
+                            <xsl:value-of select="concat($url, '#', $pdfLinkContext)"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:value-of select="$url"/>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </xsl:attribute>
+                <xsl:variable name="linkText">
+                    <xsl:value-of>
+                        <xsl:apply-templates select="@title" mode="copy_template"/>
+                    </xsl:value-of>
+                </xsl:variable>
+                <xsl:attribute name="title" select="$linkText"/>
+                <xsl:attribute name="aria-label" select="$linkText"/>   
+                
+                <xsl:call-template name="generateComponentClassAttribute">
+                    <xsl:with-param name="compClass">wh_external_resourse_link <xsl:value-of select="@type"/></xsl:with-param>
+                </xsl:call-template>
+                
+                <xsl:variable name="imageUrl">
+                    <xsl:value-of>
+                        <xsl:apply-templates select="@image" mode="copy_template"/>
+                    </xsl:value-of>
+                </xsl:variable>
+                <xsl:choose>
+                    <xsl:when test="string-length($imageUrl) > 0">
+                        <img src="{$imageUrl}"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <span class="oxy-icon oxy-icon-pdf-link"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </a>
+        </xsl:if>
+    </xsl:template>
+    
     
     <!-- Utility functions -->
     <!-- 
@@ -597,7 +661,7 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
     </xsl:function>
     
     <xsl:template match="node() | @*" mode="copy_template">
-        <xsl:copy>
+        <xsl:copy copy-namespaces="no">
             <xsl:apply-templates select="node() | @*" mode="#current"/>
         </xsl:copy>
     </xsl:template>
@@ -606,7 +670,7 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
     <!-- WH-176: Copy the menu button for mobile devices only when the 'webhelp.show.top.menu' parameter is set to 'yes' -->
     <xsl:template match="*:button[@id='wh_menu_mobile_button']" mode="copy_template">
         <xsl:if test="oxy:getParameter('webhelp.show.top.menu') = 'yes'">
-            <xsl:copy>
+            <xsl:copy copy-namespaces="no">
                 <xsl:apply-templates select="node() | @*" mode="#current"/>
             </xsl:copy>
         </xsl:if>
@@ -621,8 +685,16 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
             <xsl:variable name="top_menu">
                 <nav>
                     <xsl:call-template name="generateComponentClassAttribute">
-                        <xsl:with-param name="compClass">wh_top_menu</xsl:with-param>
+                        <xsl:with-param name="compClass">
+                            <xsl:choose>
+                                <xsl:when test="oxygen:getParameter('webhelp.top.menu.activated.on.click') = 'yes'">
+                                    <xsl:value-of>wh_top_menu activated-on-click</xsl:value-of>
+                                </xsl:when>
+                                <xsl:otherwise>wh_top_menu</xsl:otherwise>
+                            </xsl:choose>
+                            </xsl:with-param>
                     </xsl:call-template>
+                    <xsl:attribute name="aria-label">Menu Container</xsl:attribute>
                     <xsl:copy-of select="@* except @class"/>
                     <xsl:choose>
                         <xsl:when test="string-length($WEBHELP_TOP_MENU_TEMP_FILE_URL) > 0 and doc-available($WEBHELP_TOP_MENU_TEMP_FILE_URL)">
@@ -781,8 +853,18 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
                 <xsl:text>Generated by </xsl:text>
                 <a class="oxyFooter" href="http://www.oxygenxml.com/xml_webhelp.html" target="_blank">
                 	<xsl:text>&lt;oXygen/&gt; XML WebHelp</xsl:text>
-                </a><xsl:text> - Trial Edition</xsl:text>                
+                </a><xsl:text> - Evaluation Version</xsl:text>                
             </xsl:when>
+            <!-- WH-2696 Default footer fragment-->
+            <xsl:when test="contains(@href, '${webhelp.fragment.footer}') and oxygen:getParameter('webhelp.fragment.footer') = ''">
+                <xsl:variable name="whPluginDir" select="oxygen:getParameter('webhelp.responsive.dir')"/>
+                <xsl:variable name="footerDir" select="concat($whPluginDir, '/oxygen-webhelp/page-templates-fragments/footer/')"/>
+                <xsl:call-template name="extractFileContent">
+                    <xsl:with-param name="href" select="concat($footerDir, 'webhelp-footer.xml')"/>
+                    <xsl:with-param name="template_base_uri" select="$template_base_uri"/>
+                </xsl:call-template>            
+            </xsl:when>
+            
             <xsl:otherwise>
                 <xsl:call-template name="extractFileContent">
                     <xsl:with-param name="href">
@@ -806,50 +888,40 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
       <xsl:if test="string-length(normalize-space($href)) != 0">
       <!-- Convert to URL -->
       <xsl:choose>
-        <xsl:when test="(doc-available($href))">
+        <xsl:when test="doc-available(relpath:toUrl($href))">
           <!-- It is an URL -->            
           <xsl:call-template name="includeCustomHTMLContent">
             <xsl:with-param name="hrefURL" select="$href"/>
           </xsl:call-template>
         </xsl:when>
-        <xsl:otherwise>
-            <!-- Maybe it is a filepath -->
-            <xsl:variable name="fileToURL" select="oxygen:makeURL($href)"/>
+        <xsl:otherwise>            
+                                
+            <!-- WH-208 [WH-Responsive] - Use whc:include_html for header and footer -->
             <xsl:choose>
-                <!-- Test if document is available -->
-                <xsl:when test="doc-available(string($fileToURL))">
-                    <!-- It is an URL -->            
-                    <xsl:call-template name="includeCustomHTMLContent">
-                        <xsl:with-param name="hrefURL" select="$fileToURL"/>
-                    </xsl:call-template>
-                </xsl:when>
-                <xsl:otherwise>                    
-                    <!-- WH-208 [WH-Responsive] - Use whc:include_html for header and footer -->            
+                <!-- Skip URLs that contains ' ' -->
+                <xsl:when test="not(contains($href, ' '))">
+                    <!-- Try with relative path -->
+                    <xsl:variable name="relURL" select="resolve-uri(iri-to-uri($href), $template_base_uri)"/>
                     <xsl:choose>
-                        <!-- Skip URLs that contains ' ' -->
-                        <xsl:when test="not(contains($href, ' '))">
-                            <!-- Try with relative path -->
-                            <xsl:variable name="relURL" select="resolve-uri(iri-to-uri($href), $template_base_uri)"/>
-                            <xsl:choose>
-                                <xsl:when test="(doc-available($relURL))">
-                                    <!-- Relative URL to template -->            
-                                    <xsl:call-template name="includeCustomHTMLContent">
-                                        <xsl:with-param name="hrefURL" select="$relURL"/>
-                                    </xsl:call-template>
-                                </xsl:when>
-                                <xsl:otherwise>
-                                    <!-- The href is in fact an inline XML fragment. Parse it and copy the nodes to the output -->
-                                    <xsl:copy-of select="oxygen:parse-xml-fragment($href)"/>
-                                </xsl:otherwise>
-                            </xsl:choose>                    
+                        <xsl:when test="(doc-available($relURL))">
+                            <!-- Relative URL to template -->            
+                            <xsl:call-template name="includeCustomHTMLContent">
+                                <xsl:with-param name="hrefURL" select="$relURL"/>
+                            </xsl:call-template>
                         </xsl:when>
                         <xsl:otherwise>
                             <!-- The href is in fact an inline XML fragment. Parse it and copy the nodes to the output -->
                             <xsl:copy-of select="oxygen:parse-xml-fragment($href)"/>
                         </xsl:otherwise>
-                    </xsl:choose>   
+                    </xsl:choose>                    
+                </xsl:when>
+                <xsl:otherwise>
+                    <!-- The href is in fact an inline XML fragment. Parse it and copy the nodes to the output -->
+                    <xsl:copy-of select="oxygen:parse-xml-fragment($href)"/>
                 </xsl:otherwise>
-            </xsl:choose>
+            </xsl:choose>   
+        
+            
         </xsl:otherwise>
       </xsl:choose>
     </xsl:if>
@@ -861,20 +933,16 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
     <xsl:template name="includeCustomHTMLContent">
         <xsl:param name="hrefURL"/>
         
-        <xsl:variable name="content" select="doc($hrefURL)"/>
+        <xsl:variable name="content" select="doc(relpath:toUrl($hrefURL))"/>
         <xsl:variable name="selectedNodes">
             <xsl:choose>
-                <xsl:when test="$content/*:html/*:body">
+                <xsl:when test="$content/*:html/*:head or $content/*:html/*:body">
+                    <xsl:copy-of select="$content/*:html/*:head/node()"/>
                     <xsl:copy-of select="$content/*:html/*:body/node()"/>
                 </xsl:when>
-                <xsl:when test="$content/*:body">
-                    <xsl:copy-of select="$content/*:body/node()"/>
-                </xsl:when>
-                <xsl:when test="$content/*:html/*:head">
-                    <xsl:copy-of select="$content/*:html/*:head/node()"/>
-                </xsl:when>
-                <xsl:when test="$content/*:head">
+                <xsl:when test="$content/*:head or $content/*:body">
                     <xsl:copy-of select="$content/*:head/node()"/>
+                    <xsl:copy-of select="$content/*:body/node()"/>
                 </xsl:when>
                 <xsl:when test="$content/*:html">
                     <xsl:copy-of select="$content/*:html/node()"/>
@@ -956,13 +1024,11 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
                 <xsl:attribute name="href">
                     <xsl:value-of select="$favIconPath"/>
                 </xsl:attribute>
-                <xsl:comment/>
             </link>
             <link rel="icon">
                 <xsl:attribute name="href">
                     <xsl:value-of select="$favIconPath"/>
                 </xsl:attribute>
-                <xsl:comment/>
             </link>
         </xsl:if>
     </xsl:template>
@@ -974,6 +1040,12 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
             <xsl:when test="contains($urltext, 'https://')">url</xsl:when>
             <xsl:otherwise/>
         </xsl:choose>
+    </xsl:template>
+    
+    <xsl:template match="@whc:version" mode="copy_template">
+    	<xsl:attribute name="data-whc_version">
+    		<xsl:value-of select="."/>
+    	</xsl:attribute>
     </xsl:template>
     
     <xsl:template match="*" mode="copy-xhtml copy-xhtml-without-links">
@@ -990,4 +1062,5 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
     <xsl:template match="*:a" mode="copy-xhtml-without-links">
         <xsl:apply-templates select="node()" mode="#current"/>
     </xsl:template>
+    
 </xsl:stylesheet>

@@ -2,7 +2,7 @@
 <!--
     
 Oxygen Webhelp plugin
-Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
+Copyright (c) 1998-2021 Syncro Soft SRL, Romania.  All rights reserved.
 
  Generates the search results page for the WebHelp Responsive transformation.
 -->
@@ -32,14 +32,14 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
   
   
   <xsl:output 
-    method="xhtml" 
+    method="xhtml"
+    html-version="5.0"
     encoding="UTF-8"
     indent="no"
-    doctype-system="about:legacy-compat"
     omit-xml-declaration="yes"
     include-content-type="no"/>
   
-  <xsl:variable name="toc" select="document(oxygen:makeURL($TOC_XML_FILEPATH))/toc:toc"/>
+  <xsl:variable name="toc" select="document(oxygen:makeURL($TOC_XML_FILEPATH), .)/toc:toc"/>
   
   <!--
     A temporary node used to keep @lang and @dir attributes.

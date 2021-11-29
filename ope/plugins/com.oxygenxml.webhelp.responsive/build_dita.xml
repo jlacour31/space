@@ -1,17 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?><!--
     
 Oxygen WebHelp Plugin
-Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
+Copyright (c) 1998-2021 Syncro Soft SRL, Romania.  All rights reserved.
 
 --><!-- Extend the toolkit's HTML5 processing to generate WebHelp output. --><project xmlns:dita="http://dita-ot.sourceforge.net" xmlns:if="ant:if" xmlns:unless="ant:unless" name="webhelp.responsive.integrator" default="dita2webhelp-responsive" basedir=".">
  
 
-  <condition property="dot3x">
-	 <matches pattern="^3\.(.*?)$" string="${otversion}"/>
-  </condition>	
-
-  <import file="build_dita.2x.xml"/>	
- 
   <property name="com.oxygenxml.common.dir" value="${dita.plugin.com.oxygenxml.common.dir}"/>
   <!-- 
     Task definition for ant-contrib library.
@@ -35,9 +29,12 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
   </target>
   
   <!-- Targets used to inialize the WebHelp Responsive build -->
-  <target name="whr-init" depends="log-whr-version, build-init, whr-init-classpath, whr-init-publishing-template, whr-init-properties, whr-init-collection-type-prop, whr-check-feedback-params"/>
+  <target name="whr-init" depends="init-whr-version, build-init, whr-init-classpath, whr-init-publishing-template, whr-init-properties, whr-init-collection-type-prop"/>
 
-  <target name="log-whr-version">
+  <target name="init-whr-version">
+    <!-- WebHelp version & build number. -->
+    <property name="webhelp.version" value="24.0"/>
+    <property name="webhelp.build.number" value="2021101211"/>
     <echo>Oxygen XML WebHelp ${webhelp.version} build ${webhelp.build.number}</echo>
   </target>
   
@@ -46,7 +43,7 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
     <!-- Directory of the WebHelp plugin. -->
     <property name="webhelp.responsive.dir" value="${dita.plugin.com.oxygenxml.webhelp.responsive.dir}"/>  
 
-    <path id="wh_classpath">      
+    <path id="wh_classpath">   
       <fileset dir="${com.oxygenxml.common.dir}/lib">
         <include name="*.jar"/>
       </fileset>
@@ -113,23 +110,13 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
     <!-- Test if custom resources directory exists -->
     <available file="${webhelp.custom.resources}" property="webhelp.custom.resources.present"/>
     
-    <!-- WebHelp version & build number. -->
-    <property name="webhelp.version" value="22.1"/>
-    <property name="webhelp.build.number" value="2020100800"/>
-    
-    <!-- Condition to enable the Feedback feature. --> 
-    <condition property="webhelp.feedback.enabled">
-      <and>
-        <isset property="webhelp.product.id"/>
-        <isset property="webhelp.product.version"/>
-      </and>
-    </condition>
-    
     <!--
       ==========================================
         WebHelp Responsive template properties
       ==========================================
     -->    
+    <property name="webhelp.enable.html.fragments.cleanup" value="true"/>
+    
     <!-- WebHelp Responsive template related properties. -->     
     <property name="webhelp.responsive.assets.dir" location="${webhelp.responsive.dir}/oxygen-webhelp"/>
 
@@ -150,6 +137,9 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
     
     <!-- WH-1938 Enable/Disable the loading of the template's custom JS module loading -->
     <property name="webhelp.enable.template.js.module.loading" value="no"/>
+  	
+  	<!--WH-2613 Enable/Disable automatic generation of data-ofbid -->
+  	<property name="webhelp.enable.block.elements.id.generation" value="no"/>
     
     <!-- Google search parameters: convert the file paths to URLs -->
     <if>
@@ -169,6 +159,10 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
     <property name="webhelp.top.menu.temp.file" value="${dita.temp.dir}/webhelp-top-menu.xml"/>
     <makeurl property="webhelp.top.menu.temp.file.url" file="${webhelp.top.menu.temp.file}" validate="false"/>
 
+    <!-- PDF link -->
+    <property name="webhelp.show.pdf.link" value="yes"/>
+    <property name="webhelp.pdf.link.name.destination.enabled" value="yes"/>
+    
     <!--
       =============================
         WebHelp search properties
@@ -187,8 +181,22 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
       Property used to disable Kuromoji analyzer
     -->
     <property name="webhelp.enable.search.kuromoji.js" value="true"/>
-    <property name="webhelp.search.stop.words.exclude" value=""/>
     
+  	<!--
+  	  Property used to exclude stop words from the default set. 
+  	-->
+  	<property name="webhelp.search.stop.words.exclude" value=""/>
+  	
+  	<!--
+  	  Property used to include stop words to the default set. 
+  	-->
+  	<property name="webhelp.search.stop.words.include" value=""/>
+  	
+  	<!--
+  	  Property used to exclude elements from index. 
+  	-->
+  	<property name="webhelp.search.index.elements.to.exclude" value=""/>
+  	<loadfile property="webhelp.not.indexed.elements" srcfile="${dita.plugin.com.oxygenxml.webhelp.responsive.dir}/oxygen-webhelp/search.index.elements.to.exclude.txt"/>
     
     <!-- 
 		Property used to disable search pagination
@@ -227,80 +235,39 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
 	-->
     <property name="webhelp.show.full.size.image" value="true"/>
     
+    <!-- The list of elements to activate feedback block level comments -->    
+    <loadfile property="webhelp.feedback.block.level.comments" srcFile="${dita.plugin.com.oxygenxml.webhelp.responsive.dir}/oxygen-webhelp/feedback.block.level.elements.txt"/>  
+  	
+  	<!-- The list of elements to exclude for feedback block level comments -->    
+    <loadfile property="webhelp.feedback.block.level.comments.elements.to.exclude" srcFile="${dita.plugin.com.oxygenxml.webhelp.responsive.dir}/oxygen-webhelp/feedback.block.level.elements.to.exclude.txt"/>  
+  	
+  	<!-- Property that sepcifies if the custom search engine is enabled --> 
+  	<condition property="webhelp.custom.search.engine.enabled">
+  	  <and>
+  	    <isset property="webhelp.fragment.custom.search.engine.script"/>
+  	  	<isset property="webhelp.fragment.custom.search.engine.results"/>
+  	  </and>
+  	</condition>
+    
     <echo>Load file from temp: ${dita.temp.dir}</echo>
   </target>
   
   <target name="whr-after.preprocess">
-    <loadfile srcfile="${dita.temp.dir}/user.input.file.list" property="user.input.file"/>
-    <property name="outditafilesfile" value="outditafiles.list"/>
-    <property name="fullditamapandtopicfile" value="fullditamapandtopic.list"/>
-    <property name="fullditatopicfile" value="fullditatopic.list"/>
-    <property name="fullditamapfile" value="fullditamap.list"/>
-    <property name="hrefditatopicfile" value="hrefditatopic.list"/>
-    <!-- Deprecated since 2.3 -->
-    <property name="conreffile" value="conref.list"/>
-    <!-- Deprecated since 2.1 -->
-    <property name="imagefile" value="image.list"/>
-    <!-- Deprecated since 2.1 -->
-    <property name="htmlfile" value="html.list"/>
-    <property name="hreftargetsfile" value="hreftargets.list"/>
-    <property name="canditopicsfile" value="canditopics.list"/>
-    <property name="subjectschemefile" value="subjectscheme.list"/>
-    <property name="conreftargetsfile" value="conreftargets.list"/>
-    <property name="copytosourcefile" value="copytosource.list"/>
-    <property name="subtargetsfile" value="subtargets.list"/>
-    <property name="resourceonlyfile" value="resourceonly.list"/>
+  	<pathconvert property="user.input.file">
+      <first>
+        <ditafileset format="ditamap" input="true"/>
+      </first>
+	</pathconvert>
   </target>
   
   <!--
       WH-200 - 'webhelp.default.collection.type.sequence.prop' system property is used from XSLT to always generate Next and Previous buttons.
   -->
   <target name="whr-init-collection-type-prop" if="webhelp.default.collection.type.sequence.prop">
-    <script language="javascript">
-      
-                java.lang.System.setProperty("webhelp.default.collection.type.sequence.prop", "yes");
-            
-    </script>   
+      <taskdef name="set-system-property" classname="com.oxygenxml.dita.antextensions.SetSystemProperty" classpathref="wh_classpath"/>
+  	  <set-system-property name="webhelp.default.collection.type.sequence.prop" value="yes"/>
   </target>
     
-  <!--
-    Test if feedback parameters(product ID and version) are valid.
-  -->
-  <target name="whr-check-feedback-params" if="webhelp.feedback.enabled">    
-    <!-- Test if  -->
-    <macrodef name="checkSpecialCharacter">
-      <attribute name="char"/>
-      <sequential>
-        <fail message="Special character '@{char}' must not be used in the product ID: ${webhelp.product.id}">
-          <condition>
-            <contains string="${webhelp.product.id}" substring="@{char}"/>
-          </condition>
-        </fail>
-        <fail message="Special character '@{char}' must not be used in the product version: ${webhelp.product.version}">
-          <condition>
-            <contains string="${webhelp.product.version}" substring="@{char}"/>
-          </condition>
-        </fail>
-      </sequential>
-    </macrodef>
-    
-    <!-- Check if special characters are used: &lt; &gt; / \ &apos; ( ) { } = ; * % + &amp; -->
-    <checkSpecialCharacter char="&lt;"/>
-    <checkSpecialCharacter char="&gt;"/>
-    <checkSpecialCharacter char="/"/>
-    <checkSpecialCharacter char="\"/>
-    <checkSpecialCharacter char="'"/>
-    <checkSpecialCharacter char="("/>
-    <checkSpecialCharacter char=")"/>
-    <checkSpecialCharacter char="{"/>
-    <checkSpecialCharacter char="}"/>
-    <checkSpecialCharacter char="="/>
-    <checkSpecialCharacter char=";"/>
-    <checkSpecialCharacter char="*"/>
-    <checkSpecialCharacter char="%"/>
-    <checkSpecialCharacter char="+"/>
-    <checkSpecialCharacter char="&amp;"/>
-  </target>  
   
   <!--
 		Copy favicon in the output directory.
@@ -355,7 +322,7 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
   <target name="whr-create-topic-pages" depends="whr-process-reviews, whr-dita-inner-topics" unless="noTopic"/>
   
   <!-- Create the JavaScript files with the search database. -->
-  <target name="whr-search-index" depends="whr-search-index-preprocess">
+  <target name="whr-search-index" depends="whr-search-index-preprocess" unless="${webhelp.custom.search.engine.enabled}">
     <!-- Extract search JS from jar and copy them to the 'oxygen-webhelp/search' folder -->
     
     <copy todir="${output.dir}/oxygen-webhelp/app/search/">
@@ -375,7 +342,6 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
       <resources>
         <javaresource name="responsive/searchEngineJS/stemmers/en_stemmer.js" classpathref="wh_classpath"/>
         <javaresource name="responsive/searchEngineJS/stemmers/fr_stemmer.js" classpathref="wh_classpath"/>
-        <javaresource name="responsive/searchEngineJS/stemmers/index.html" classpathref="wh_classpath"/>
         <javaresource name="responsive/searchEngineJS/stemmers/de_stemmer.js" classpathref="wh_classpath"/>
         <javaresource name="responsive/searchEngineJS/stemmers/stemmer.js" classpathref="wh_classpath"/>
       </resources>
@@ -390,7 +356,8 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
     <propertyregex property="webhelp.language.short" input="${webhelp.language}" regexp="(..)" select="\1" defaultvalue="en" override="true"/>
     
     <echo>Indexing html files in ${output.dir}, indexer language is: ${webhelp.language.short}</echo>
-    <indexertask outputDir="${output.dir}/oxygen-webhelp/app/search/index" tempDir="${dita.temp.dir}" propsDir="${webhelp.responsive.dir}/indexer" indexerLanguage="${webhelp.language.short}" htmlExtension="${noDotExt}" stem="${use.stemming}" enableAutocomplete="${webhelp.enable.search.autocomplete}" userDictionary="${webhelp.search.japanese.dictionary}" outputType="WH_RESPONSIVE" stopWordsExclude="${webhelp.search.stop.words.exclude}" doNotIndex="div.ignore,nav.wh_tools,footer,header,div.wh_publication_toc,div.wh_topic_toc,div.wh_child_links,div.related_link,div.wh_copyright_information">
+    <indexertask outputDir="${output.dir}/oxygen-webhelp/app/search/index" tempDir="${dita.temp.dir}" propsDir="${webhelp.responsive.dir}/indexer" indexerLanguage="${webhelp.language.short}" htmlExtension="${noDotExt}" stem="${use.stemming}" enableAutocomplete="${webhelp.enable.search.autocomplete}" userDictionary="${webhelp.search.japanese.dictionary}" outputType="WH_RESPONSIVE" stopWordsExclude="${webhelp.search.stop.words.exclude}" stopWordsInclude="${webhelp.search.stop.words.include}" doNotIndex="${webhelp.not.indexed.elements}" searchIndexElementsToExclude="${webhelp.search.index.elements.to.exclude}">
+    	
       
       
       <fileset dir="${output.dir}">
@@ -428,73 +395,43 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
       </and>
     </condition>
     
+  	<tstamp>
+  	     <format property="timestamp" pattern="yyyyMMddHHmmss"/>
+  	</tstamp>
+  	
     <copy todir="${output.dir}/oxygen-webhelp" overwrite="true" encoding="ISO-8859-1">
       <fileset dir="${webhelp.responsive.dir}/oxygen-webhelp">
         <include name="**/*"/>
         <exclude name="**/.svn"/>
         <exclude name="lib/kuromoji/**" unless="${use.kuromoji}"/>
+      	<exclude name="app/search/nwSearchFnt.LICENSE.txt" if="${webhelp.custom.search.engine.enabled}"/>
+      	<exclude name="app/search/search.js" if="${webhelp.custom.search.engine.enabled}"/>
+      	<exclude name="app/search/searchAutocomplete.js" if="${webhelp.custom.search.engine.enabled}"/>
+      	<exclude name="app/search/searchHistoryItems.js" if="${webhelp.custom.search.engine.enabled}"/>
       	<exclude name="page-templates/**"/>
         <exclude name="page-templates-fragments/**"/>
-        <exclude name="resources/**"/>
-        <exclude name="feedback/**"/>
+        <exclude name="resources/**"/>        
+      	<exclude name="feedback.block.level.elements.txt"/>
+      	<exclude name="feedback.block.level.elements.to.exclude.txt"/>
+      	<exclude name="search.index.elements.to.exclude.txt"/>
       </fileset>
       <filterset begintoken="@" endtoken="@">
         <filter token="PRODUCT_ID" value="${webhelp.product.id}"/>
         <filter token="PRODUCT_VERSION" value="${webhelp.product.version}"/>
         <filter token="FOLDER_OUTPUT_PATH" value="${corrected.output.dir}"/>
         <filter token="WEBHELP_PAGE_DIRECTION" value="${webhelp.page.direction}"/>
+      	<filter token="WEBHELP_BUILD_ID" value="${webhelp.build.number}"/>
+      	<filter token="TIMESTAMP" value="${timestamp}"/>
       </filterset>
     </copy>
     <copy file="${webhelp.responsive.dir}/license-3rd-party.txt" todir="${output.dir}"/>
-  </target>
-  
-  
-  <target name="whr-copy-feedback-resources" if="${webhelp.feedback.enabled}">
-    <copy todir="${output.dir}/oxygen-webhelp" overwrite="true" encoding="UTF-8">
-      <fileset dir="${webhelp.responsive.dir}/oxygen-webhelp">
-        <include name="feedback/**/*" if="webhelp.feedback.enabled"/>
-        <exclude name="feedback/feedback.xml"/>
-        <exclude name="feedback/resources/img/*"/>
-        <exclude name="feedback/install/img/*"/>
-      	<exclude name="feedback/resources/bootstrap/fonts/*"/>
-      </fileset>
-      <filterset begintoken="@" endtoken="@">
-        <filter token="PRODUCT_ID" value="${webhelp.product.id}"/>
-        <filter token="PRODUCT_VERSION" value="${webhelp.product.version}"/>
-        <filter token="FOLDER_OUTPUT_PATH" value="${corrected.output.dir}"/>
-        <filter token="WEBHELP_PAGE_DIRECTION" value="${webhelp.page.direction}"/>
-        <filter token="LANGUAGE" value="${webhelp.language}"/>
-      </filterset>
-    </copy>
-    <copy todir="${output.dir}/oxygen-webhelp" overwrite="true">
-      <fileset dir="${webhelp.responsive.dir}/oxygen-webhelp">
-        <include name="feedback/install/img/*" if="webhelp.feedback.enabled"/>
-        <include name="feedback/resources/img/*" if="webhelp.feedback.enabled"/>
-      	<include name="feedback/resources/bootstrap/fonts/*" if="webhelp.feedback.enabled"/>
-      </fileset>
-    </copy>
-    <!-- Overwrite topic-page.js and config.js to include feedback module -->
-    <copy todir="${output.dir}/oxygen-webhelp/app" overwrite="true">
-      <fileset dir="${webhelp.responsive.dir}/oxygen-webhelp/feedback/resources/js">
-        <include name="config.js" if="webhelp.feedback.enabled"/>
-        <include name="topic-page.js" if="webhelp.feedback.enabled"/>
-      </fileset>
-    </copy>
+  	
   </target>
   
   <!--
     Write properties to an XML file so they can be read from XSLT processing steps. 
   -->
-   <target name="whr-create-props-file" depends="whr-create-props-file.2x, whr-create-props-file.3x">
-   	<!-- 
-   	 Use depends in place of antcalls, because in this target we define a property that needs to be read by other targets.
-   	 The antcall isolates the property.
-     <antcall target="whr-create-props-file.2x" />
-  	 <antcall target="whr-create-props-file.3x"/>
-  	 -->
-   </target>
-   <target name="whr-create-props-file.3x" if="dot3x">
-   	<?convert_2x?>
+   <target name="whr-create-props-file">
     <touch file="${webhelp.responsive.parameters.file}" mkdirs="true"/>
     <echoproperties destfile="${webhelp.responsive.parameters.file}" format="xml"/>
     
@@ -506,7 +443,7 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
   	<pipeline>
     <xslt in="${webhelp.responsive.parameters.file}" out="${properties.json.file}" style="${webhelp.responsive.dir}/xsl/options/jsonProperties.xsl" reloadstylesheet="${webhelp.reload.stylesheet}">
       
-      <xmlcatalog>
+      <xmlcatalog classpath="">
         <catalogpath path="${xsl.extensions.xml.catalog.file.path}"/>
         <catalogpath path="${dita.plugin.org.dita.base.dir}/catalog-dita.xml"/>
       </xmlcatalog>	
@@ -522,9 +459,9 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
   <target name="whr-detect-lang">
     <property name="inputMap" value="${dita.temp.dir}/${user.input.file}"/>
 
-    <taskdef name="detect-lang" classname="com.suite.sol.ditaot.DetectLang">
-      <classpath path="${dita.dir}/plugins/org.dita.pdf2/lib/fo.jar"/>
-    </taskdef>
+        <taskdef name="detect-lang" classname="com.oxygenxml.dita.antextensions.DetectLang">
+       	  <classpath path="${com.oxygenxml.common.dir}/lib/oxygen-dita-publishing-ant-extensions.jar"/>
+        </taskdef>
 
     <!-- Set document.locale from xml:lang -->
     <!-- The map takes precedence, followed by the first topic -->
@@ -591,23 +528,16 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
     <makeurl property="indexterms.properties.url" file="${indexterms.properties.file}"/>
   	
   	
-  	<antcall target="whr-collect-indexterms.2x"/>
-  	<antcall target="whr-collect-indexterms.3x"/>
-
-  	<!-- Load the indexterms related properties -->
-    <property file="${indexterms.properties.file}"/>
-  </target>
-  <target name="whr-collect-indexterms.3x" description="Build list of index terms" if="dot3x">
-   	<?convert_2x?>
-    <property name="args.extract.indexterms.xsl" value="${webhelp.responsive.dir}/xsl/indexterms/extractIndexterms.xsl"/>
+  	<property name="args.extract.indexterms.xsl" value="${webhelp.responsive.dir}/xsl/indexterms/extractIndexterms.xsl"/>
     <makeurl property="dita.temp.dir.url" file="${dita.temp.dir}"/>
   	<pipeline>
-    <xslt basedir="${dita.temp.dir}" destdir="${dita.temp.dir}" includesfile="${dita.temp.dir}/${fullditatopicfile}" excludesfile="${dita.temp.dir}/${resourceonlyfile}" style="${args.extract.indexterms.xsl}" classpathref="dost.class.path" reloadstylesheet="${webhelp.reload.stylesheet}">
+    <xslt basedir="${dita.temp.dir}" destdir="${dita.temp.dir}" style="${args.extract.indexterms.xsl}" reloadstylesheet="${webhelp.reload.stylesheet}">
+      <ditafileset format="dita" processingRole="normal"/>
       <param name="TEMPFOLDER" expression="${dita.temp.dir.url}"/>
       <param name="OUT_EXT" expression="${out.ext}"/>
       <mapper type="regexp" from="^(.*?)$$" to="\1.indexterms"/>
       
-      <xmlcatalog>
+      <xmlcatalog classpath="">
         <catalogpath path="${xsl.extensions.xml.catalog.file.path}"/>
         <catalogpath path="${dita.plugin.org.dita.base.dir}/catalog-dita.xml"/>
       </xmlcatalog>	
@@ -617,20 +547,20 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
   	<pipeline>
     <xslt in="${dita.temp.dir}/${user.input.file}" out="${output.dir}/index.xml" style="${webhelp.responsive.dir}/xsl/indexterms/collectIndexterms.xsl" classpathref="dost.class.path" reloadstylesheet="${webhelp.reload.stylesheet}">
       <param name="TEMPFOLDER" expression="${dita.temp.dir}"/>
-      <param name="FILELIST" expression="${dita.temp.dir}/${fullditatopicfile}"/>
-      <param name="FILELIST_TO_EXCLUDE" expression="${dita.temp.dir}/${resourceonlyfile}"/>
-      <param name="FILELIST_ENCODING" expression="${file.encoding}"/>
+      <param name="JOB_FILE" expression="${dita.temp.dir}/.job.xml"/>
       <param name="INDEXTERMS_PROPERTIES_URL" expression="${indexterms.properties.url}"/>
       <param name="WEBHELP_PARAMETERS_URL" expression="${webhelp.responsive.parameters.file.url}"/>
       
       
-      <xmlcatalog>
+      <xmlcatalog classpath="">
         <catalogpath path="${xsl.extensions.xml.catalog.file.path}"/>
         <catalogpath path="${dita.plugin.org.dita.base.dir}/catalog-dita.xml"/>
       </xmlcatalog>	
     </xslt>
   	</pipeline>
-    
+
+  	<!-- Load the indexterms related properties -->
+    <property file="${indexterms.properties.file}"/>
   </target>
 
 
@@ -639,47 +569,35 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
 		structures the replies into the parent comments. 
 	-->
   <target name="whr-process-reviews" if="${webhelp.show.changes.and.comments}" unless="noTopic">
-    <antcall target="whr-process-reviews.2x"/>
-    <antcall target="whr-process-reviews.3x"/>
-  </target>	
-  <target name="whr-process-reviews.3x" if="dot3x">
-	<?convert_2x?>
     <echo>Transforming Oxygen PIs into elements.</echo>
-
-  	<pipeline>
-    <xslt basedir="${dita.temp.dir}" destdir="${dita.temp.dir}.1" includesfile="${dita.temp.dir}/${fullditatopicfile}" style="${dita.plugin.com.oxygenxml.webhelp.responsive.dir}/xsl/review/review-pis-to-elements.xsl" reloadstylesheet="${webhelp.reload.stylesheet}">
-
-      
-      <excludesfile name="${dita.temp.dir}/${resourceonlyfile}" if:set="resourceonlyfile"/>
-      <includesfile name="${dita.temp.dir}/${chunkedtopicfile}" if:set="chunkedtopicfile"/>
-      <param name="show.changes.and.comments" expression="${webhelp.show.changes.and.comments}"/>
-
-      <xmlcatalog>
-        <catalogpath path="${xsl.extensions.xml.catalog.file.path}"/>
-        <catalogpath path="${dita.plugin.org.dita.base.dir}/catalog-dita.xml"/>
-      </xmlcatalog>	
-      <mapper type="identity"/>
-    </xslt>
-  	</pipeline>
-
-
+    
+    <pipeline>
+      <xslt basedir="${dita.temp.dir}" destdir="${dita.temp.dir}" style="${dita.plugin.com.oxygenxml.webhelp.responsive.dir}/xsl/review/review-pis-to-elements.xsl" reloadstylesheet="${webhelp.reload.stylesheet}">
+        <ditafileset format="dita" processingRole="normal"/>
+        <param name="show.changes.and.comments" expression="${webhelp.show.changes.and.comments}"/>
+        
+        <xmlcatalog classpath="">
+          <catalogpath path="${xsl.extensions.xml.catalog.file.path}"/>
+          <catalogpath path="${dita.plugin.org.dita.base.dir}/catalog-dita.xml"/>
+        </xmlcatalog>	
+        <mapper type="identity"/>
+      </xslt>
+    </pipeline>
+    
+    
     <echo>Grouping comments into threads.</echo>
-
-  	<pipeline>
-    <xslt basedir="${dita.temp.dir}.1" destdir="${dita.temp.dir}" includesfile="${dita.temp.dir}/${fullditatopicfile}" style="${dita.plugin.com.oxygenxml.webhelp.responsive.dir}/xsl/review/review-group-replies.xsl" reloadstylesheet="${webhelp.reload.stylesheet}">
-
-      <excludesfile name="${dita.temp.dir}/${resourceonlyfile}" if:set="resourceonlyfile"/>
-      <includesfile name="${dita.temp.dir}/${chunkedtopicfile}" if:set="chunkedtopicfile"/>
-      <param name="show.changes.and.comments" expression="${webhelp.show.changes.and.comments}"/>
-
-      <xmlcatalog>
-        <catalogpath path="${xsl.extensions.xml.catalog.file.path}"/>
-        <catalogpath path="${dita.plugin.org.dita.base.dir}/catalog-dita.xml"/>
-      </xmlcatalog>	
-      <mapper type="identity"/>
-    </xslt>
-  	</pipeline>
-  	
+    <pipeline>
+      <xslt basedir="${dita.temp.dir}" destdir="${dita.temp.dir}" style="${dita.plugin.com.oxygenxml.webhelp.responsive.dir}/xsl/review/review-group-replies.xsl" reloadstylesheet="${webhelp.reload.stylesheet}">
+        <ditafileset format="dita" processingRole="normal"/>
+        <param name="show.changes.and.comments" expression="${webhelp.show.changes.and.comments}"/>
+        
+        <xmlcatalog classpath="">
+          <catalogpath path="${xsl.extensions.xml.catalog.file.path}"/>
+          <catalogpath path="${dita.plugin.org.dita.base.dir}/catalog-dita.xml"/>
+        </xmlcatalog>	
+        <mapper type="identity"/>
+      </xslt>
+    </pipeline>
   </target>
   
   <!-- 
@@ -691,15 +609,10 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
     Create the index.html. 
   -->
   <target name="whr-create-main-page">
-  	<antcall target="whr-create-main-page.2x"/>
-  	<antcall target="whr-create-main-page.3x"/>
-  </target>
-  <target name="whr-create-main-page.3x" if="dot3x">
-	<?convert_2x?>
     <property name="args.whr.create.main.page.xsl" value="${webhelp.responsive.dir}/xsl/mainFiles/createMainPage.xsl"/>
 	<pipeline>
     <xslt in="${webhelp.template.index.file}" out="${output.dir}/index${out.ext}" style="${args.whr.create.main.page.xsl}" classpathref="dost.class.path">
-      <param name="TOC_XML_FILEPATH" expression="${output.dir}/toc.xml"/>
+      <param name="TOC_XML_FILEPATH" expression="${dita.temp.dir}/toc.xml"/>
       <param name="XHTML_FOLDER" expression="${output.dir}"/>
       <param name="OUTPUTDIR" expression="${output.dir}"/>
       <param name="BASEDIR" expression="${webhelp.responsive.dir}"/>
@@ -731,7 +644,7 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
             
       
       
-      <xmlcatalog>
+      <xmlcatalog classpath="">
         <catalogpath path="${xsl.extensions.xml.catalog.file.path}"/>
         <catalogpath path="${dita.plugin.org.dita.base.dir}/catalog-dita.xml"/>
       </xmlcatalog>	
@@ -744,16 +657,11 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
   <!--
     Create WebHelp Search Page, search.html.
   -->
-  <target name="whr-create-search-page">
-    <antcall target="whr-create-search-page.2x"/>
-    <antcall target="whr-create-search-page.3x"/>
-  </target>	
-  <target name="whr-create-search-page.3x" if="dot3x">    
-  	<?convert_2x?>
+  <target name="whr-create-search-page">    
     <property name="args.whr.create.search.page.xsl" value="${webhelp.responsive.dir}/xsl/mainFiles/createSearchPage.xsl"/>
     <pipeline>
     <xslt in="${webhelp.template.search.file}" out="${output.dir}/search${out.ext}" style="${args.whr.create.search.page.xsl}" classpathref="dost.class.path">
-      <param name="TOC_XML_FILEPATH" expression="${output.dir}/toc.xml"/>
+      <param name="TOC_XML_FILEPATH" expression="${dita.temp.dir}/toc.xml"/>
       <param name="INDEX_XML_FILEPATH" expression="${output.dir}/index.xml"/>
       <param name="XHTML_FOLDER" expression="${output.dir}"/>
       <param name="OUTPUTDIR" expression="${output.dir}"/>
@@ -784,7 +692,7 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
       
       
       
-      <xmlcatalog>
+      <xmlcatalog classpath="">
         <catalogpath path="${xsl.extensions.xml.catalog.file.path}"/>
         <catalogpath path="${dita.plugin.org.dita.base.dir}/catalog-dita.xml"/>
       </xmlcatalog>	
@@ -797,15 +705,10 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
     Create WebHelp indexterms page, indexTerms.html
   -->
   <target name="whr-create-indexterms-page">
-  	<antcall target="whr-create-indexterms-page.2x"/>
-  	<antcall target="whr-create-indexterms-page.3x"/>
-  </target>	
-  <target name="whr-create-indexterms-page.3x" if="dot3x">
-	<?convert_2x?>
     <property name="args.whr.create.indexterms.page.xsl" value="${webhelp.responsive.dir}/xsl/mainFiles/createIndextermsPage.xsl"/>
   	<pipeline>
     <xslt in="${webhelp.template.index.terms.file}" out="${output.dir}/indexTerms${out.ext}" style="${args.whr.create.indexterms.page.xsl}">
-      <param name="TOC_XML_FILEPATH" expression="${output.dir}/toc.xml"/>
+      <param name="TOC_XML_FILEPATH" expression="${dita.temp.dir}/toc.xml"/>
       <param name="INDEX_XML_FILEPATH" expression="${output.dir}/index.xml"/>
       <param name="XHTML_FOLDER" expression="${output.dir}"/>
       <param name="OUTPUTDIR" expression="${output.dir}"/>
@@ -837,7 +740,7 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
       
       
       
-      <xmlcatalog>
+      <xmlcatalog classpath="">
         <catalogpath path="${xsl.extensions.xml.catalog.file.path}"/>
         <catalogpath path="${dita.plugin.org.dita.base.dir}/catalog-dita.xml"/>
       </xmlcatalog>	
@@ -849,18 +752,13 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
   <!--
     Create WebHelp JS & PHP localization files (strings.js & strings.php).
   -->
-  <target name="whr-create-localization-files">
-  	<antcall target="whr-create-localization-files.2x"/>
-  	<antcall target="whr-create-localization-files.3x"/>
-  </target>
-  <target name="whr-create-localization-files.3x" if="dot3x">    
-	<?convert_2x?>    
+  <target name="whr-create-localization-files">    
     <property name="strings.list.file" value="${webhelp.responsive.dir}/oxygen-webhelp/resources/localization/strings.xml"/>
     <available file="${dita.dir}/resources/plugins.xml" property="DITA_OT_PLUGINS_FILE_PATH" value="${dita.dir}/resources/plugins.xml"/>
     <available file="${dita.dir}/config/plugins.xml" property="DITA_OT_PLUGINS_FILE_PATH" value="${dita.dir}/config/plugins.xml"/>
 	<pipeline>    
     <xslt in="${strings.list.file}" style="${webhelp.responsive.dir}/xsl/mainFiles/createLocalizationFiles.xsl" out="${dita.temp.dir}/dummy.html" classpathref="dost.class.path">
-      <param name="TOC_XML_FILEPATH" expression="${output.dir}/toc.xml"/>
+      <param name="TOC_XML_FILEPATH" expression="${dita.temp.dir}/toc.xml"/>
       <param name="INDEX_XML_FILEPATH" expression="${output.dir}/index.xml"/>
       <param name="XHTML_FOLDER" expression="${output.dir}"/>
       <param name="OUTPUTDIR" expression="${output.dir}"/>
@@ -881,7 +779,6 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
       <param name="WEBHELP_VERSION" expression="${webhelp.version}" if:set="webhelp.version"/>
       <param name="WEBHELP_BUILD_NUMBER" expression="${webhelp.build.number}" if:set="webhelp.build.number"/>
       <param name="WEBHELP_TRIAL_LICENSE" expression="${webhelp.trial.license}" if:set="webhelp.trial.license"/>
-      <param name="WEBHELP_FEEDBACK_ENABLED" expression="${webhelp.feedback.enabled}" if:set="webhelp.feedback.enabled"/>
       
       <param name="WEBHELP_DITAMAP_URL" expression="${org.dita-ot.html.map.url}"/>
       <param name="WEBHELP_PARAMETERS_URL" expression="${webhelp.responsive.parameters.file.url}"/>
@@ -893,7 +790,7 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
       
       
       
-      <xmlcatalog>
+      <xmlcatalog classpath="">
         <catalogpath path="${xsl.extensions.xml.catalog.file.path}"/>
         <catalogpath path="${dita.plugin.org.dita.base.dir}/catalog-dita.xml"/>
       </xmlcatalog>	
@@ -917,21 +814,16 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
     <property name="args.whr.topic.xsl" value="${webhelp.responsive.dir}/xsl/dita2webhelp/dita2webhelp.xsl"/>
 
     <!-- URL to the DITA Map -->
-    <loadfile property="org.dita-ot.html.map" srcfile="${dita.temp.dir}/${user.input.file.listfile}">
-      <filterchain>
-        <headfilter lines="1"/>
-      </filterchain>
-    </loadfile>
-    <makeurl property="org.dita-ot.html.map.url" file="${dita.temp.dir}/${org.dita-ot.html.map}"/>
+    <makeurl property="org.dita-ot.html.map.url" file="${dita.temp.dir}/${user.input.file}" validate="no"/>
 
     <makeurl file="${dita.input.valfile}" property="dita.input.valfile.url" validate="no"/>
     <makeurl property="webhelp.template.file.path.url" file="${webhelp.template.file.path}"/>
     
-    <condition property="ditaOt2x">
-      <matches pattern="^2\.(.*)$" string="${otversion}"/>
-    </condition>
-    
-    <makeurl file="${args.input}" property="args.input.url" validate="no"/>
+  	<!-- Test if args.input is already URL -->
+  	<condition property="args.input.url" value="${args.input}">
+  		<matches pattern="^file\:/" string="${args.input}"/>
+  	</condition>
+    <makeurl file="${args.input}" property="args.input.url" validate="no" unless:set="args.input.url"/>
     
     <sequential>
       <pipeline>
@@ -966,15 +858,13 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
           <param name="WEBHELP_FOOTER_FILE" expression="${webhelp.footer.file}" if:set="webhelp.footer.file"/>
           <param name="WEBHELP_TRIAL_LICENSE" expression="${webhelp.trial.license}" if:set="webhelp.trial.license"/>
           <param name="WEBHELP_SEARCH_SCRIPT" expression="${webhelp.google.search.script.url}" if:set="webhelp.google.search.script.url"/>
-          <param name="WEBHELP_PRODUCT_ID" expression="${webhelp.product.id}" if:set="webhelp.product.id"/>
-          <param name="WEBHELP_PRODUCT_VERSION" expression="${webhelp.product.version}" if:set="webhelp.product.version"/>
           <param name="WEBHELP_VERSION" expression="${webhelp.version}" if:set="webhelp.version"/>
           <param name="WEBHELP_BUILD_NUMBER" expression="${webhelp.build.number}" if:set="webhelp.build.number"/>
           <param name="INDEX_XML_FILEPATH" expression="${output.dir}/index.xml"/>
           <param name="WEBHELP_FAVICON" expression="${webhelp.favicon.relpath}" if:set="webhelp.favicon.relpath"/>
           
           <!-- URL to the DITA map is necesary only for responsive webhelp -->
-          <param name="TOC_XML_FILEPATH" expression="${output.dir}/toc.xml"/>
+          <param name="TOC_XML_FILEPATH" expression="${dita.temp.dir}/toc.xml"/>
           <param name="WEBHELP_DITAMAP_URL" expression="${org.dita-ot.html.map.url}"/>
           <param name="WEBHELP_TEMPLATE_URL" expression="${webhelp.template.file.path.url}"/>
           <param name="WEBHELP_LOGO_IMAGE" expression="${webhelp.logo.image.output}" if:set="webhelp.logo.image.output"/>
@@ -987,7 +877,15 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
           <param name="WEBHELP_TOP_MENU_TEMP_FILE_URL" expression="${webhelp.top.menu.temp.file.url}"/>
           <param name="DEFAULTLANG" expression="${webhelp.language}" if:set="webhelp.language"/>
           
+          <param name="DATA_OFBID_ELEMENTS" expression="${webhelp.feedback.block.level.comments}" if:set="webhelp.feedback.block.level.comments"/>
+          <param name="DATA_OFBID_ELEMENTS_TO_EXCLUDE" expression="${webhelp.feedback.block.level.comments.elements.to.exclude}" if:set="webhelp.feedback.block.level.comments.elements.to.exclude"/>
+        	
           <param name="DITAMAP_URL" expression="${args.input.url}"/>
+          
+          <param name="args.rellinks.group.mode" expression="${webhelp.rellinks.group.mode}" if:set="webhelp.rellinks.group.mode"/>
+          
+          <param name="figure.title.placement" expression="${webhelp.figure.title.placement}" if:set="webhelp.figure.title.placement"/>
+          <param name="table.title.placement" expression="${webhelp.table.title.placement}" if:set="webhelp.table.title.placement"/>
           
           
     
@@ -1026,12 +924,11 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
           
 <!--          -->
           
-          <xmlcatalog>
+          <xmlcatalog classpath="">
             <catalogpath path="${xsl.extensions.xml.catalog.file.path}"/>
             <catalogpath path="${dita.plugin.org.dita.base.dir}/catalog-dita.xml"/>
           </xmlcatalog>	
-          <mapper classname="org.dita.dost.util.JobMapper" to="${out.ext}" if:set="ditaOt2x"/>
-          <mapper classname="org.dita.dost.ant.types.JobMapper" to="${out.ext}" unless:set="ditaOt2x"/>
+          <mapper classname="org.dita.dost.ant.types.JobMapper" to="${out.ext}"/>
         </xslt>
       </pipeline>
     </sequential>
@@ -1041,20 +938,12 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
     Generate 'context-help-map.xml' used by Context Sensitive Help system.
   -->
    <target name="whr-context-help-map">
-  	<antcall target="whr-context-help-map.2x"/>
-  	<antcall target="whr-context-help-map.3x"/>
-   </target>   	
-   <target name="whr-context-help-map.3x" if="dot3x">
-   	<?convert_2x?>
     <!-- Create context-help-map.xml -->
    	<pipeline>
     <xslt in="${dita.temp.dir}/${user.input.file}" out="${output.dir}/context-help-map.xml" style="${webhelp.responsive.dir}/xsl/contextHelp/contextHelpMapDita.xsl" classpathref="dost.class.path" reloadstylesheet="${webhelp.reload.stylesheet}">
       <param name="OUT_EXT" expression="${out.ext}"/>
-      <param name="WEBHELP_PRODUCT_ID" expression="${webhelp.product.id}" if:set="webhelp.product.id"/>
-      <param name="WEBHELP_PRODUCT_VERSION" expression="${webhelp.product.version}" if:set="webhelp.product.version"/>
       
-      
-      <xmlcatalog>
+      <xmlcatalog classpath="">
         <catalogpath path="${xsl.extensions.xml.catalog.file.path}"/>
         <catalogpath path="${dita.plugin.org.dita.base.dir}/catalog-dita.xml"/>
       </xmlcatalog>	
@@ -1065,7 +954,7 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
    	<pipeline>
     <xslt in="${output.dir}/context-help-map.xml" out="${output.dir}/oxygen-webhelp/app/context-help/context-help-map.js" style="${webhelp.responsive.dir}/xsl/contextHelp/contextHelpMapDitaJS.xsl" classpathref="dost.class.path" reloadstylesheet="${webhelp.reload.stylesheet}">
       
-      <xmlcatalog>
+      <xmlcatalog classpath="">
         <catalogpath path="${xsl.extensions.xml.catalog.file.path}"/>
         <catalogpath path="${dita.plugin.org.dita.base.dir}/catalog-dita.xml"/>
       </xmlcatalog>	
@@ -1077,16 +966,14 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
   <!-- 
     Create toc.xml containing the documentation hierarchy. 
   -->
-  <target name="whr-toc-xml" description="Build WebHelp Responsive toc.xml file" depends="whr-toc-xml.2x, whr-toc-xml.3x"/>	
-  <target name="whr-toc-xml.3x" if="dot3x">
-	<?convert_2x?>
+  <target name="whr-toc-xml" description="Build WebHelp Responsive toc.xml file">
     <makeurl file="${dita.input.valfile}" property="dita.input.valfile.url" validate="no"/>
 
     <makeurl file="${dita.temp.dir}" property="dita.temp.dir.url"/>
 
     <property name="args.whr.createTocXML.xsl" value="${webhelp.responsive.dir}/xsl/navLinks/tocDita.xsl"/>
   	<pipeline>
-    <xslt in="${dita.temp.dir}/${user.input.file}" out="${output.dir}/toc.xml" style="${args.whr.createTocXML.xsl}" classpathref="dost.class.path" reloadstylesheet="${webhelp.reload.stylesheet}">
+    <xslt in="${dita.temp.dir}/${user.input.file}" out="${dita.temp.dir}/toc.xml" style="${args.whr.createTocXML.xsl}" classpathref="dost.class.path" reloadstylesheet="${webhelp.reload.stylesheet}">
       <param name="OUT_EXT" expression="${out.ext}"/>
       <param name="FILTERFILE" expression="${dita.input.valfile.url}" if:set="dita.input.valfile"/>
       <param name="WEBHELP_PARAMETERS_URL" expression="${webhelp.responsive.parameters.file.url}"/>
@@ -1100,7 +987,7 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
       
       <outputproperty name="method" value="xhtml"/>
       
-      <xmlcatalog>
+      <xmlcatalog classpath="">
         <catalogpath path="${xsl.extensions.xml.catalog.file.path}"/>
         <catalogpath path="${dita.plugin.org.dita.base.dir}/catalog-dita.xml"/>
       </xmlcatalog>	
@@ -1109,18 +996,13 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
   </target>
   
   <target name="whr-nav-links">
-    <antcall target="whr-nav-links.2x"/>
-    <antcall target="whr-nav-links.3x"/>
-  </target>	
-  <target name="whr-nav-links.3x" if="dot3x">
-  	<?convert_2x?>
     <makeurl file="${dita.temp.dir}" property="dita.temp.dir.url"/>
     
     <property name="nav.json.out.dir" value="${output.dir}/oxygen-webhelp/app/nav-links/json"/>
     <makeurl property="nav.json.out.dir.url" file="${nav.json.out.dir}" validate="false"/>
     
   	<pipeline>
-    <xslt in="${output.dir}/toc.xml" out="${dita.temp.dir}/navlinks-dummy.html" style="${webhelp.responsive.dir}/xsl/navLinks/navLinks.xsl" classpathref="dost.class.path" reloadstylesheet="${webhelp.reload.stylesheet}">
+    <xslt in="${dita.temp.dir}/toc.xml" out="${dita.temp.dir}/navlinks-dummy.html" style="${webhelp.responsive.dir}/xsl/navLinks/navLinks.xsl" classpathref="dost.class.path" reloadstylesheet="${webhelp.reload.stylesheet}">
       <param name="TEMP_DIR_URL" expression="${dita.temp.dir.url}"/>
       <param name="WEBHELP_SIDE_TOC_LINKS" expression="${webhelp.side.toc.links}" if:set="webhelp.side.toc.links"/>
       <param name="WEBHELP_PUBLICATION_TOC_LINKS" expression="${webhelp.publication.toc.links}"/>
@@ -1134,7 +1016,7 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
       -->
       
       
-      <xmlcatalog>
+      <xmlcatalog classpath="">
         <catalogpath path="${xsl.extensions.xml.catalog.file.path}"/>
         <catalogpath path="${dita.plugin.org.dita.base.dir}/catalog-dita.xml"/>
       </xmlcatalog>	
@@ -1148,11 +1030,6 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
     See https://www.oxygenxml.com/doc/versions/19.0/ug-editor/topics/webhelp-seo-x-publishing3.html.
   -->
   <target name="whr-sitemap" if="webhelp.sitemap.base.url">
-  	<antcall target="whr-sitemap.2x"/>
-  	<antcall target="whr-sitemap.3x"/>
-  </target>	
-  <target name="whr-sitemap.3x" if="dot3x">
-  	<?convert_2x?>
     <tstamp>
       <format property="webhelp.sitemap.date" pattern="yyyy-MM-dd"/>
     </tstamp>
@@ -1165,7 +1042,7 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
       <param name="WEBHELP_PRIORITY" expression="${webhelp.sitemap.priority}" if:set="webhelp.sitemap.priority"/>
       
       
-      <xmlcatalog>
+      <xmlcatalog classpath="">
         <catalogpath path="${xsl.extensions.xml.catalog.file.path}"/>
         <catalogpath path="${dita.plugin.org.dita.base.dir}/catalog-dita.xml"/>
       </xmlcatalog>	
@@ -1173,7 +1050,7 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
 	</pipeline>
   </target>
 
-  <target name="whr-copy-resources" depends="        whr-copy-logo-image,        whr-copy-favicon,        whr-copy-custom-resources,        whr-copy-common-resources,        whr-copy-feedback-resources,        whr-copy-template-resources"/>
+  <target name="whr-copy-resources" depends="        whr-copy-logo-image,        whr-copy-favicon,        whr-copy-custom-resources,        whr-copy-common-resources,        whr-copy-template-resources"/>
 
   <!-- Copy additional template resources. -->
   <target name="whr-copy-template-resources">    
@@ -1182,12 +1059,7 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
   </target>
   
   <!-- Target executed before indexing the HTML files -->
-  <target name="whr-search-index-preprocess">
-    <antcall target="whr-search-index-preprocess.2x"/>
-    <antcall target="whr-search-index-preprocess.3x"/>
-  </target>	
-  <target name="whr-search-index-preprocess.3x" if="dot3x">
-  	<?convert_2x?>
+  <target name="whr-search-index-preprocess" unless="${webhelp.custom.search.engine.enabled}">
     <!-- Collect the topics marked with @search="no" in order to exclude them from search indexer -->
     <property name="create.search.excludes.xsl" value="${webhelp.responsive.dir}/xsl/search/createSearchExcludesFile.xsl"/>
     <property name="search.excludes.file" value="${dita.temp.dir}/search-excludes.txt"/>
@@ -1199,7 +1071,7 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
 
       <param name="OUT_EXTENSION" expression="${out.ext}"/>
       
-      <xmlcatalog>
+      <xmlcatalog classpath="">
         <catalogpath path="${xsl.extensions.xml.catalog.file.path}"/>
         <catalogpath path="${dita.plugin.org.dita.base.dir}/catalog-dita.xml"/>
       </xmlcatalog>	

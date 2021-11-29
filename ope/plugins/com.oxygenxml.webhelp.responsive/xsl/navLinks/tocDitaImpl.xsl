@@ -2,14 +2,14 @@
 <!--
     
 Oxygen Webhelp Plugin
-Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
+Copyright (c) 1998-2021 Syncro Soft SRL, Romania.  All rights reserved.
 
 -->
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:relpath="http://dita2indesign/functions/relpath"
     xmlns:oxygen="http://www.oxygenxml.com/functions"
     xmlns:toc="http://www.oxygenxml.com/ns/webhelp/toc"
-    xmlns="http://www.oxygenxml.com/ns/webhelp/toc" exclude-result-prefixes="relpath oxygen"
+    xmlns="http://www.oxygenxml.com/ns/webhelp/toc" exclude-result-prefixes="relpath oxygen toc"
     xmlns:xhtml="http://www.w3.org/1999/xhtml" version="2.0">
 
 
@@ -144,6 +144,11 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
         <xsl:choose>
             <xsl:when test="@href or @copy-to or not(empty($title))">
                 <topic>
+                    <!-- WA-4052: Propagate source information so that we can add 
+                         edit links to side-toc.  -->
+                    <xsl:attribute name="xtrf" select="@xtrf"/>
+                    <xsl:attribute name="xtrc" select="@xtrc"/>
+                    
                     <xsl:attribute name="href">
                         <xsl:choose>
                             <xsl:when

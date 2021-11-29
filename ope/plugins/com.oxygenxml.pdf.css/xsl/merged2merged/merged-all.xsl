@@ -8,7 +8,6 @@
     exclude-result-prefixes="#all">
 
     <xsl:import href="../review/review-pis-to-elements.xsl"/>    
-    <xsl:import href="../review/review-dita-id-filter.xsl"/>
 
     <xsl:param name="args.draft" select="'no'"/>
     <xsl:param name="args.chapter.layout" select="'BASIC'" />
@@ -18,8 +17,9 @@
     <xsl:param name="css.params"/>
     <xsl:param name="hide.frontpage.toc.index.glossary" select="'no'"/>
     <xsl:param name="defaultLanguage" select="'en'"/>
+    
+    <xsl:variable name="numbering-sections" select="contains($css.params, 'numbering-sections=yes')" as="xs:boolean"/>
 
-     
     <xsl:include href="merged-namespace-decls.xsl"/>
     <xsl:include href="merged-filtering.xsl"/>    
     <xsl:include href="merged-toc.xsl"/>
@@ -33,12 +33,14 @@
     <xsl:include href="merged-links.xsl"/>
     <xsl:include href="merged-whitespaces.xsl"/>
     <xsl:include href="merged-topics.xsl"/>
+    <xsl:include href="merged-sections.xsl"/>
     <xsl:include href="merged-figures.xsl"/>
     <xsl:include href="merged-titles.xsl"/>
-    <xsl:include href="merged-footnotes.xsl"/>
     
     <xsl:include href="merged-flagging.xsl"/>
     <xsl:include href="merged-placeholders.xsl"/>
     <xsl:include href="merged-named-destinations.xsl"/>
+    
+    <xsl:include href="merged-plugin-svg-syntaxdiagrams.xsl"/>
     
 </xsl:stylesheet>

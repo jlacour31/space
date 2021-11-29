@@ -2,7 +2,7 @@
 <!--
     
 Oxygen Codeblock Highlights plugin
-Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
+Copyright (c) 1998-2021 Syncro Soft SRL, Romania.  All rights reserved.
 Licensed under the terms stated in the license file README.txt 
 available in the base directory of this plugin.
 
@@ -18,7 +18,7 @@ available in the base directory of this plugin.
   <xsl:include href="common.xsl"/>
   
   <!-- Codeblock -->
-  <xsl:template match="*[contains(@class,' pr-d/codeblock ')][contains(@outputclass, 'language-')]" use-when="function-available('version:getProductVersion') or function-available('oxy:highlight')">
+	<xsl:template match="*[contains(@class,' pr-d/codeblock ')][contains(@outputclass, 'language-') or @outputclass=$allConfigHighlights]" use-when="function-available('version:getProductVersion') or function-available('oxy:highlight')">
     <xsl:call-template name="generateAttrLabel"/>
     <fo:block xsl:use-attribute-sets="codeblock">
       <xsl:call-template name="commonattributes"/>

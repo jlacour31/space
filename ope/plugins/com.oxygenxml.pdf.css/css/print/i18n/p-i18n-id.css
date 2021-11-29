@@ -76,8 +76,8 @@ I18N file for id
 }
 
 /* Links. */
-*[class ~= "topic/xref"][href]:lang(id):after,
-*[class ~= "topic/link"][href]:lang(id):after {
+*[class ~= "map/map"] *[class ~= "topic/xref"][href]:lang(id):after,
+*[class ~= "map/map"] *[class ~= "topic/link"][href]:lang(id):after {
   content: " (pada halaman " target-counter(attr(href), page) ")";
 }
 
@@ -91,7 +91,7 @@ I18N file for id
 				  
 					  	
 	
-*[class~="topic/table"] > *[class~="topic/title"][is-repeated]:lang(id):after(2) {
+*[class~="topic/table"] > *[class~="topic/title"][data-is-repeated]:lang(id):after(2) {
     content: " " "";
 }
 

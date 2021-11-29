@@ -76,8 +76,8 @@ I18N file for sr
 }
 
 /* Links. */
-*[class ~= "topic/xref"][href]:lang(sr):after,
-*[class ~= "topic/link"][href]:lang(sr):after {
+*[class ~= "map/map"] *[class ~= "topic/xref"][href]:lang(sr):after,
+*[class ~= "map/map"] *[class ~= "topic/link"][href]:lang(sr):after {
   content: " (на страни " target-counter(attr(href), page) ")";
 }
 
@@ -91,7 +91,7 @@ I18N file for sr
 				  
 					  	
 	
-*[class~="topic/table"] > *[class~="topic/title"][is-repeated]:lang(sr):after(2) {
+*[class~="topic/table"] > *[class~="topic/title"][data-is-repeated]:lang(sr):after(2) {
     content: " " "";
 }
 

@@ -2,7 +2,7 @@
 <!--
     
 Oxygen Webhelp plugin
-Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
+Copyright (c) 1998-2021 Syncro Soft SRL, Romania.  All rights reserved.
 
 -->
 
@@ -31,9 +31,9 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
   
   <xsl:output 
     method="xhtml" 
+    html-version="5.0"
     encoding="UTF-8"
     indent="no"
-    doctype-system="about:legacy-compat"
     omit-xml-declaration="yes"
     include-content-type="no"/>
   
@@ -49,8 +49,8 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
     select="'&#12354;&#12363;&#12373;&#12383;&#12394;&#12399;&#12414;&#12420;&#12425;&#12431;&#12356;&#12365;&#12375;&#12385;&#12395;&#12402;&#12415;&#12426;&#12432;&#12358;&#12367;&#12377;&#12388;&#12396;&#12405;&#12416;&#12422;&#12427;&#12360;&#12369;&#12379;&#12390;&#12397;&#12408;&#12417;&#12428;&#12433;&#12362;&#12371;&#12381;&#12392;&#12398;&#12411;&#12418;&#12424;&#12429;&#12434;'"/>  
   
   <!-- Loads the additional XML documents. -->
-  <xsl:variable name="index" select="document(oxygen:makeURL($INDEX_XML_FILEPATH))/index:index"/>    
-  <xsl:variable name="toc" select="document(oxygen:makeURL($TOC_XML_FILEPATH))/toc:toc"/>
+  <xsl:variable name="index" select="document(oxygen:makeURL($INDEX_XML_FILEPATH), .)/index:index"/>    
+  <xsl:variable name="toc" select="document(oxygen:makeURL($TOC_XML_FILEPATH), .)/toc:toc"/>
   
   <!--
     A temporary node used to keep @lang and @dir attributes.
@@ -114,7 +114,7 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
       Generates the list of the letters from terms list 
       EXM-37491
     -->
-    <ul class="wh-letters" tabindex="0" aria-label="{$indexTermsAlphabetLabel}">      
+    <ul class="wh-letters" tabindex="0" role="menu" aria-label="{$indexTermsAlphabetLabel}">      
       <xsl:for-each-group select="index:term" group-by="
         upper-case(
         translate(
@@ -132,7 +132,7 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
       </xsl:for-each-group>
     </ul>
     
-    <ul id="indexList">
+    <ul id="indexList" role="tree">
       <xsl:for-each-group select="index:term" group-by="
         upper-case(
         translate(
@@ -141,7 +141,7 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
         collation="{$collation}">
         <xsl:sort select="current-grouping-key()" collation="{$collation}"/>
         <!-- Output the first letter -->
-        <li class="wh_term_group" id="whletter_{escape-html-uri(lower-case(current-grouping-key()))}"
+        <li class="wh_term_group" role="treeitem" id="whletter_{escape-html-uri(lower-case(current-grouping-key()))}"
           aria-label="{concat($indexTermsLetterLabel, ' ', current-grouping-key())}"
           tabindex="0">
         <span class="wh_first_letter"><xsl:value-of 
@@ -159,7 +159,7 @@ Copyright (c) 1998-2020 Syncro Soft SRL, Romania.  All rights reserved.
   </xsl:template>
   
   <xsl:template match="html:html" mode="copy_template">
-    <xsl:copy>
+    <xsl:copy copy-namespaces="no">
       <xsl:apply-templates select="@*" mode="#current"/>
       <xsl:attribute name="lang" select="oxygen:getParameter('webhelp.language')"/>
       <xsl:attribute name="dir" select="oxygen:getParameter('webhelp.page.direction')"/>
