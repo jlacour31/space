@@ -1,6 +1,6 @@
 #!/bin/sh
 # Copy the LICENSE_KEY variable into 'licensekey.txt' in Oxygen Publishing Engine 
-printf "%s" "$LICENSE_KEY" > ope/licensekey.txt
+echo -e "$LICENSE_KEY" > ope/licensekey.txt
 # The LICENSE_KEY variable does not contain new line character but '@@' instead
 # Replace all the '@@' characters back to '\n' in the 'licensekey.txt' file
 sed -i 's/@@/\n/g' ope/licensekey.txt
