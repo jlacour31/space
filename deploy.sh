@@ -4,6 +4,7 @@ rev=$(git rev-parse --short HEAD)
 git init
 git config user.name ${USER_NAME}
 git config user.email ${USER_MAIL}
+git remote add upstream ${GIT_REMOTE}
 git remote set-url upstream ${GIT_REMOTE}
 git fetch upstream
 git reset upstream/gh-pages
